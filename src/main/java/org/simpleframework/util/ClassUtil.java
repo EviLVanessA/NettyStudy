@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -124,5 +126,23 @@ public class ClassUtil {
     public static ClassLoader getClassLoader() {
         //获取上下文类加载器
         return Thread.currentThread().getContextClassLoader();
+    }
+
+    /**
+     * 实例化class
+     * @param clazz 类
+     * @param accessible 是否支持创建私有class实例
+     * @param <T> class类型
+     * @return 实例化的类
+     */
+    public static <T> T newInstance(Class<?> clazz,Boolean accessible){
+        try {
+            Constructor<?> constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(accessible);
+            return (T) constructor.newInstance();
+        } catch (Exception e) {
+            log.error("newInstance error",e);
+            throw new RuntimeException(e);
+        }
     }
 }

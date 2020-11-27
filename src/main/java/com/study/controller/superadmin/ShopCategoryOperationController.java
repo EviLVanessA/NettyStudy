@@ -3,6 +3,7 @@ package com.study.controller.superadmin;
 import com.study.entity.bo.ShopCategory;
 import com.study.entity.dto.Result;
 import com.study.service.solo.ShopCategoryService;
+import org.simpleframework.core.annotation.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author jianghui
  * @date 2020-11-25 19:46
  */
+@Controller
 public class ShopCategoryOperationController {
     private ShopCategoryService shopCategoryService;
     /**
