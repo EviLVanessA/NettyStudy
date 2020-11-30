@@ -2,7 +2,10 @@ package org.simpleframework.core;
 
 import com.study.HelloServlet;
 import com.study.controller.fronted.MainPageController;
+import com.study.service.solo.HeadLineService;
+import com.study.service.solo.impl.HeadLineServiceImpl;
 import org.junit.jupiter.api.*;
+import org.simpleframework.core.annotation.Controller;
 
 /**
  * @author jianghui
@@ -34,6 +37,21 @@ public class BeanContainTest {
         HelloServlet helloServlet = (HelloServlet) beanContainer.getBean(HelloServlet.class);
         Assertions.assertNotNull(controller);
         Assertions.assertNull(helloServlet);
-
     }
+
+    @DisplayName("根据注解获取对应的实例：getClassesByAnnotationTest")
+    @Order(3)
+    @Test
+    public void getClassesByAnnotationTest(){
+        Assertions.assertTrue(beanContainer.isLoaded());
+        Assertions.assertEquals(3,beanContainer.getClassByAnnotation(Controller.class).size());
+    }
+    @DisplayName("根据接口获取实现类：getClassesBySuperTest")
+    @Order(4)
+    @Test
+    public void getClassesBySuperTest(){
+        Assertions.assertTrue(beanContainer.isLoaded());
+        Assertions.assertTrue(beanContainer.getClassesBySuper(HeadLineService.class).contains(HeadLineServiceImpl.class));
+    }
+
 }

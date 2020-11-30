@@ -4,6 +4,7 @@ import com.study.entity.bo.ShopCategory;
 import com.study.entity.dto.Result;
 import com.study.service.solo.ShopCategoryService;
 import org.simpleframework.core.annotation.Controller;
+import org.simpleframework.inject.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.List;
  */
 @Controller
 public class ShopCategoryOperationController {
+    @Autowired
     private ShopCategoryService shopCategoryService;
     /**
      * 新增分类
