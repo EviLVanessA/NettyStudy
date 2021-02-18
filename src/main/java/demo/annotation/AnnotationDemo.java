@@ -1,4 +1,4 @@
-package demo;
+package demo.annotation;
 
 /**
  * @author jianghui

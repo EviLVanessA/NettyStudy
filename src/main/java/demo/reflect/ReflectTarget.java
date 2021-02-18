@@ -1,8 +1,9 @@
-package demo;
+package demo.reflect;
 
 /**
- *
- * stu: java.lang.reflect类库里面主要的类：
+ * stu: 反射机制的作用：
+ *      ①在运行时判断任意一个对象所属的类 ②在运行时获取类的对象 ③在运行时访问java对象的属性,方法,构造方法等
+ *  java.lang.reflect类库里面主要的类：
  *      Field:表示类中的成员变量
  *      Method：表示类中的方法
  *      Constructor：表示类的构造函数
@@ -11,10 +12,10 @@ package demo;
  *      Class类也是类的一种，class则是关键字
  *      Class类只有一个私有的构造函数，只有JVM能够创建Class类的实例
  *      JVM中只有唯一一个和类相应的Class对象来描述其类型信息
- *  获取Class对象的三种方式
- *      Object   ->  getClass()
- *      任何数据类型都有一个静态的class属性
- *      imp:通过Class的静态方法forName(String className)
+ *  获取Class对象的三种方式：
+ *      ① Object   ->  getClass()
+ *      ② 任何数据类型都有一个静态的class属性
+ *  imp:③ 通过Class的静态方法forName(String className)
  * stu: 在运行期间，一个类，只有一个与之相对应的Class对象产生
  *      反射的主要用法: 获取类的构造方法、获取类的成员变量、获取类的成员方法
  *  =============================================================
@@ -51,4 +52,37 @@ package demo;
  */
 public class ReflectTarget {
 
+    /**
+     * 为包可见 default
+     */
+    ReflectTarget(String str) {
+        System.out.println("默认的构造方法  str = " + str);
+    }
+
+    public ReflectTarget() {
+        System.out.println("调用了共有的无参构造方法");
+    }
+
+    public ReflectTarget(char name) {
+        System.out.println("调用了一个带参数的构造方法 name = " + name);
+    }
+
+    public ReflectTarget(String name,int age) {
+        System.out.println("调用了多个带参数的构造方法 name = " + name + ",age = " + age);
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException {
+        //第一种方式获取Class对象
+        ReflectTarget reflectTarget = new ReflectTarget();
+        Class reflectTargetClass1 = reflectTarget.getClass();
+        System.out.println("1st:" + reflectTargetClass1.getName());
+        //第二种方式获取
+        Class<ReflectTarget> reflectTargetClass2 = ReflectTarget.class;
+        System.out.println("2nd:" + reflectTargetClass2.getName());
+        //
+        System.out.println(reflectTargetClass1 == reflectTargetClass2);
+        //第三种方式获取
+        Class reflectTargetClass3 = Class.forName("demo.reflect.ReflectTarget");
+        System.out.println(reflectTargetClass3.getName());
+    }
 }

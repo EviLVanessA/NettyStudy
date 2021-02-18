@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
+ * dto 数据传输对象
  * @author jianghui
  * @date 2020-11-25 14:33
  */

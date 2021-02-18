@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 前端控制器，用于拦截所有的请求
+ * 前端控制器，作用：①拦截所有请求 ②解析请求 ③派发给对应的Controller里边的方法进行处理
  *
  * @author jianghui
  * @date 2020-11-25 15:00
