@@ -19,7 +19,7 @@ public class EnumStarvingSingleton {
          */
         HOLDER;
         private final EnumStarvingSingleton instance;
-        private ContainerHolder(){
+        ContainerHolder(){
             instance = new EnumStarvingSingleton();
         }
     }

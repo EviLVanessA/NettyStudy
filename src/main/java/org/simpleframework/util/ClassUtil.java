@@ -20,7 +20,10 @@ public class ClassUtil {
     public static final String FILE_PROTOCOL = "file";
 
     /**
-     * 获取该包下类集合
+     * 根据包名提取包下边的所有Class对象
+     * 作用：①获取类加载器  目的是为了获取项目发布的实际路径
+     * ②通过类加载器获取到加载的资源信息
+     * ③依据不同的资源类型，采用不同的方式获取资源的集合
      *
      * @param packageName 包名
      * @return 类集合
@@ -28,7 +31,7 @@ public class ClassUtil {
     public static Set<Class<?>> extractPackageClass(String packageName) {
         //1.获取到类加载器  -> 获项目发布的实际路径 不可以传入绝对路径 此方法并不友好 打包后会找不到路径
         ClassLoader classLoader = getClassLoader();
-        //2.通过类加载器获取到加载的资源信息
+        //2.通过类加载器获取到加载的资源信息 getResource
         packageName = packageName.replace(".", "/");
         URL url = classLoader.getResource(packageName);
         if (null == url) {
@@ -129,17 +132,18 @@ public class ClassUtil {
 
     /**
      * 设置类中属性的值
-     * @param field 成员变量
-     * @param target 类的实例
-     * @param value 成员变量的值
+     *
+     * @param field      成员变量
+     * @param target     类的实例
+     * @param value      成员变量的值
      * @param accessible 是否允许设置私有属性
      */
-    public static void setField(Field field,Object target,Object value,boolean accessible){
+    public static void setField(Field field, Object target, Object value, boolean accessible) {
         field.setAccessible(accessible);
         try {
-            field.set(target,value);
+            field.set(target, value);
         } catch (IllegalAccessException e) {
-            log.error("setField error",e);
+            log.error("setField error", e);
             throw new RuntimeException(e);
         }
     }
@@ -147,18 +151,19 @@ public class ClassUtil {
 
     /**
      * 实例化class
-     * @param clazz 类
+     *
+     * @param clazz      类
      * @param accessible 是否支持创建私有class实例
-     * @param <T> class类型
+     * @param <T>        class类型
      * @return 实例化的类
      */
-    public static <T> T newInstance(Class<?> clazz,Boolean accessible){
+    public static <T> T newInstance(Class<?> clazz, Boolean accessible) {
         try {
             Constructor<?> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(accessible);
             return (T) constructor.newInstance();
         } catch (Exception e) {
-            log.error("newInstance error",e);
+            log.error("newInstance error", e);
             throw new RuntimeException(e);
         }
     }

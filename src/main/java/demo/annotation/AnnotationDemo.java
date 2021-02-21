@@ -13,10 +13,11 @@ package demo.annotation;
  *          ③运行时动态处理，作为额外信息的载体，如获取注解信息
  *      注解的分类：
  *          ①标准注解：Override、Deprecated、SuppressWarnings
- *          ②元注解：修饰注解的注解 1) @Retention：注解的生命周期
+ *          ②元注解：修饰注解的注解 1) @Retention：注解的生命周期,标注注解被保留时间的长短
  *                  2) @Target：注解的作用目标,描述所修饰的注解的使用范围
- *                     packages、types 类、接口、枚举、Annotation类型
- *                     类型成员、方法参数和本地变量
+ *                     packages、types(类、接口、枚举、Annotation类型)
+ *                     类型成员(方法、构造方法、成员变量、枚举值)
+ *                     方法参数和本地变量(循环变量、catch参数)
  *                  3) @Inherited：是否允许子类继承该注解
  *                  4) @Documented：注解是否应当被包含JavaDoc文档中
  *          ③自定义注解

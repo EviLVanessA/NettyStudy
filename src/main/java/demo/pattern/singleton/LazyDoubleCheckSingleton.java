@@ -17,6 +17,7 @@ public class LazyDoubleCheckSingleton {
         if (instance == null){
             synchronized (LazyDoubleCheckSingleton.class){
                 if (instance == null){
+                    //分三步进行 ①分配内存空间 ②初始化对象 ③设置instance指向刚分配的内存地址
                     instance = new LazyDoubleCheckSingleton();
                 }
             }

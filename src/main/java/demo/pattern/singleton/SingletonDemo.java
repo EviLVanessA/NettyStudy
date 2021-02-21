@@ -14,10 +14,10 @@ public class SingletonDemo {
     }
 
     private static void demo1() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        StarvingSingleton instance = StarvingSingleton.getInstance();
+        LazyDoubleCheckSingleton instance = LazyDoubleCheckSingleton.getInstance();
 
-        Class<StarvingSingleton> clazz = StarvingSingleton.class;
-        Constructor<StarvingSingleton> constructor = clazz.getDeclaredConstructor();
+        Class<LazyDoubleCheckSingleton> clazz = LazyDoubleCheckSingleton.class;
+        Constructor<LazyDoubleCheckSingleton> constructor = clazz.getDeclaredConstructor();
         constructor.setAccessible(true);
 
 
