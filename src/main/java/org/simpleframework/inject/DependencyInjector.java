@@ -10,6 +10,8 @@ import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
+ * 提供依赖注入的服务
+ *
  * @author jianghui
  * @date 2020-11-27 10:58
  */
@@ -38,6 +40,7 @@ public class DependencyInjector {
         for (Class<?> clazz : classes) {
             //2.遍历Class对象的所有成员变量
             Field[] declaredFields = clazz.getDeclaredFields();
+            //foreach前的判空处理
             if (ValidationUtil.isEmpty(declaredFields)) {
                 continue;
             }
@@ -50,11 +53,13 @@ public class DependencyInjector {
                     Class<?> fieldType = field.getType();
                     //5.获取这些成员变量的类型再容器里对应的实例
                     Object fieldValue = getFieldInstance(fieldType, value);
+                    //养成好习惯 获取后判空
                     if (fieldValue == null) {
                         throw new RuntimeException("unable to inject relevant type," +
                                 "target fieldClass is :" + fieldType.getName() + "->" + value);
                     } else {
                         //6.通过反射将对应的成员变量实例注入到成员变量所在的类的实例里
+                        //获取该class在beanContainer中的实例
                         Object targetBean = beanContainer.getBean(clazz);
                         ClassUtil.setField(field, targetBean, fieldValue, true);
                     }

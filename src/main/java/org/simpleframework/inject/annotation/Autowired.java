@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 目前仅支持成员变量注入
+ *
  * @author jianghui
  * @date 2020-11-27 10:56
  */

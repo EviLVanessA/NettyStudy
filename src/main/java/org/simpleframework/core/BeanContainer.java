@@ -15,8 +15,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 实现能抵御反射和序列化的 枚举单例
  * stu:容器的组成部分 ①保存Class对象及其实例的载体 ②容器的加载 ③容器的操作方式
  * 实现容器的加载：①配置与管理的获取 ②获取指定范围内的Class对象 ③依据配置提取Class对象，连同实例一并存入容器
+ * NoArgsConstructor 设置空构造函数为私有
  *
  * @author jianghui
  * @date 2020-11-26 17:33
@@ -25,11 +27,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class BeanContainer {
     /**
-     * 存放所有被配置标记的目标对象的Map
+     * 存放所有被配置标记的目标对象的Map ConcurrentHashMap 摈弃了分段锁机制 采用了synchronized + CAS + 红黑树
      */
     private final Map<Class<?>, Object> beanMap = new ConcurrentHashMap<>();
+    /**
+     * 加载bean的注解列表
+     */
     private static final List<Class<? extends Annotation>> BEAN_ANNOTATION
             = Arrays.asList(Component.class, Controller.class, Repository.class, Service.class);
+
+    /**
+     * 容器是否已加载bean
+     */
+    private boolean loaded = false;
 
     public static BeanContainer getInstance() {
         return ContainerHolder.HOLDER.instance;
@@ -40,20 +50,18 @@ public class BeanContainer {
      */
     private enum ContainerHolder {
         /**
-         * 枚举
+         * 枚举 用于盛放BeanContainer实例
          */
         HOLDER;
         private final BeanContainer instance;
 
+        /**
+         * 枚举的构造函数默认为私有
+         */
         ContainerHolder() {
             instance = new BeanContainer();
         }
     }
-
-    /**
-     * 容器是否已加载bean
-     */
-    private boolean loaded = false;
 
     public boolean isLoaded() {
         return loaded;
@@ -69,24 +77,27 @@ public class BeanContainer {
     }
 
     /**
-     * 加载bean
+     * 扫描加载所有的bean synchronized 防止多个线程加载bean
      *
      * @param packageName 包名
      */
     public synchronized void loadBeans(String packageName) {
-        //判断Bean容器是否被加载过
+        //判断Bean容器是否被加载过 防止重复加载
         if (isLoaded()) {
             log.warn("BeanContainer has been loaded");
             return;
         }
+        //根据包名提取包下边的所有Class对象
         Set<Class<?>> classSet = ClassUtil.extractPackageClass(packageName);
         if (ValidationUtil.isEmpty(classSet)) {
             log.warn("have nothing in package " + packageName);
             return;
         }
+        //循环遍历该class是否含有相应的注解
         for (Class<?> clazz : classSet) {
             for (Class<? extends Annotation> ann : BEAN_ANNOTATION) {
                 if (clazz.isAnnotationPresent(ann)) {
+                    //如果含有修饰则将目标类本身作为键，目标类的实例作为值放到beanMap中
                     beanMap.put(clazz, ClassUtil.newInstance(clazz, true));
                 }
             }
@@ -106,7 +117,7 @@ public class BeanContainer {
     }
 
     /**
-     * 移除IOC容器管理的对象
+     * 移除IoC容器管理的对象
      *
      * @param clazz Class对象
      * @return 返回移除的bean, 没有返回null
@@ -169,10 +180,11 @@ public class BeanContainer {
 
     /**
      * 通过接口或者父类获取实现类或者子类的Class集合，但不包括起本身
+     *
      * @param interfaceOrClass 接口或者类
      * @return class集合
      */
-    public Set<Class<?>> getClassesBySuper(Class<?> interfaceOrClass){
+    public Set<Class<?>> getClassesBySuper(Class<?> interfaceOrClass) {
         //获取beanMap的所有class对象
         Set<Class<?>> keySet = getClasses();
         if (ValidationUtil.isEmpty(keySet)) {
@@ -182,7 +194,7 @@ public class BeanContainer {
         //判断KeySet里的元素是否是传入的接口的类或者子类，并添加到keySet
         Set<Class<?>> classSet = new HashSet<>();
         for (Class<?> clazz : keySet) {
-            //判断类是否有被相关注解标记
+            //判断类是否有被相关注解标记 isAssignableFrom 判断是实现类还是子类
             if (interfaceOrClass.isAssignableFrom(clazz) && !clazz.equals(interfaceOrClass)) {
                 classSet.add(clazz);
             }

@@ -33,7 +33,7 @@ public class HeadLineShopCategoryCombineServiceImpl implements HeadLineShopCateg
         ShopCategory shopCategoryCondition = new ShopCategory();
         Result<List<ShopCategory>> queryAllShopCategory = this.shopCategoryService.queryAllShopCategory(shopCategoryCondition, 1, 100);
         //合并
-        return mergeMainPageInfoResult(queryAllHeadLine.getData(),queryAllShopCategory.getData());
+        return mergeMainPageInfoResult(queryAllHeadLine.getData(), queryAllShopCategory.getData());
     }
 
     private Result<MainPageInfoDTO> mergeMainPageInfoResult(List<HeadLine> queryAllHeadLine, List<ShopCategory> queryAllShopCategory) {
