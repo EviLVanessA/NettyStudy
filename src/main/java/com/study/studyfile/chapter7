@@ -1,0 +1,122 @@
+1、容器初始化主要做的事情
+  ①将配置文件解析为Resource实例
+  ②将Resource实例解析为BeanDefinition实例
+  ③将BeanDefinition实例注册到beanDefinitionMap中(DefaultListableBeanFactory)
+2、后置处理器PostProcessor(本身也是一种需要注册到容器里的Bean)
+  其里面的方法会在特定的时机被容器调用，通过此种机制，可以实现不改变容器或者Bean核心逻辑的情况下对Bean进行扩展,
+  比如对Bean进行包装,影响其行为、修改Bean的内容等
+3、PostProcessor的种类
+  大类分为容器级别的后置处理器以及Bean级别的后置处理器
+  ①BeanDefinitionRegistryPostProcessor(容器级别)
+    允许在正常的BeanFactoryPostProcessor检测开始之前注册更多的自定义beanDefinition
+    实现对BeanDefinition的自定义注册
+  ②BeanFactoryProcessor(容器级别)
+    影响容器里边的行为
+  ③BeanPostProcessor(Bean级别)
+4、Aware(可感知的、有意识的) 通过继承相应的Aware接口获得相应的属性
+  如ApplicationContextAware(获取ApplicationContext), BeanNameAware(获取BeanName)
+5、事件监听器模式(观察者模式的一种实现)
+  (1)回调函数：再组件调用时，往组件注册自定义的方法以便组件再特定的场景下调用
+  监听器将监听感兴趣的事件，一旦事件发生，便做出响应
+  涉及三个主键①事件源:(Event Source) ②事件监听器(Event Listener)
+            ③事件对象(Event Object)作为事件源和事件监听器之前的传输信息的对象
+6、Spring的事件驱动模型
+  三大部分：①事件：ApplicationEvent抽象类
+          ②事件监听器：ApplicationListener(继承自EventListener)
+          ③事件发布器：Publisher以及Multicaster
+7、refresh()方法剖析：
+  ①prepareRefresh()
+    为刷新容器做准备
+
+  ②ObtainFreshBeanFactory()
+    针对XML配置,最终创建内部容器,该容器负责Bean的创建与管理,此步会进行BeanDefinition的注册
+
+  ③prepareBeanFactory(beanFactory)
+    注册一些容器中需要的系统Bean,例如classloader,beanFactoryPostProcessor等
+
+  ④postProcessBeanFactory(beanFactory)
+    允许容器的子类去注册postProcessor 钩子函数
+
+  ⑤invokeBeanFactoryPostProcessor(beanFactory)
+    激活在容器中注册为bean的BeanFactoryPostProcessors
+
+  ⑥registerBeanPostProcessors(beanFactory)
+    注册拦截Bean创建过程的BeanPostProcessor
+
+  ⑦initMessageSource() 使得ApplicationContext具有国际化能力
+
+  ⑧initApplicationEventMulticaster();
+    初始化ApplicationEventMulticaster该类作为事件发布者,可以存储所有事件监听者信息
+    并根据不同的事件,通知不同的事件监听器
+
+  ⑨onRefresh(); 钩子方法
+    预留给AbstractApplicationContext的子类用于初始化其他特殊的bean,该方法需要在单例bean初始化之前调用,
+    比如初始化Web容器就会去初始化一些和主题展示相关的Bean(ThemeSource)
+
+  ⑩registerListeners();
+    注册监听器,检查监听器的bean并注册它们
+
+  ⑪finishBeanFactoryInitialization(beanFactory);
+    设置自定义的类型转换器ConversionService,设置自定义AOP相关的类LoadTimeWeaverAware,
+    清除临时的ClassLoader,实例化所有的类
+
+  ⑫finishRefresh()
+    初始化容器的生命周期事件处理器(默认使用DefaultLifecycleProcessor),调用扩展了SmartLifecycleProcessor
+    当Spring容器加载所有bean并完成初始化之后,会接着回调实现该接口的类中对应的方法
+    并发布容器刷新完毕事件ContextRefreshedEvent给对应的事件监听者
+
+  ⑬resetCommonCaches()
+    重置Spring内核中的共用的缓存,因为我们可能再也不需要单例bean的元数据
+
+8、doGetBean
+    首先会调用transformedBeanName(name),有三种形式获取BeanName ①原始beanName ②加了& ③别名alias
+  (1)尝试从缓存获取Bean(获取单例Bean)
+     getSingleton(beanName)
+  (2)循环依赖判断
+  (3)递归去父容器获取Bean实例
+  (4)从当前容器获取BeanDefinition
+  (5)递归实例化显式依赖的Bean(例如有depends-on属性设置)
+  (6)根据不同的Scope采用不同的策略创建Bean实例
+  (7)对Bean进行类型检查
+9、createBean
+  ①Bean类型解析
+    resolveBeanClass(mdb,beanName) 判断需要创建的Bean是否可以实例化,即是否可以通过当前的类加载器加载
+  ②处理方法覆盖
+    prepareMethodOverrides() 校验和准备Bean中的方法覆盖
+    如下边的xml
+    <bean id="myTestBean" class="test.MyTestBean">
+      <lookup-method name="getUserBean" bean="teacher">
+      <replaced-method name="changedMethod" replacer="replacer">
+    </bean>
+    <bean id="teacher" class="...">
+    <bean id="replacer" class="...">
+
+    检查MyTestBean中是否有changedMethod这个方法,没有则报错
+    检查teacher中是否有getUserBean这个方法,没有则报错
+  ③Bean实例化前的后置处理
+    如果bean配置了初始化前和初始化后的处理器,则试图返回一个需要创建Bean的代理对象
+    resolveBeforeInstantiation只是针对有自定义的targetSource,因为自定义的
+    targetSource不是Spring的bean,那么肯定不需要后续的一系列的实例化和初始化,所以可以在
+    resolveBeforeInstantiation直接进行proxy
+    resolveBeforeInstantiation(beanName,mdbToUse) 基本上后置处理器都会使用责任链模式
+  ④调用doCreateBean
+    (1)创建bean实例(工厂方法、含参构造注入、无参构造注入)
+        定义bean的包装类BeanWrapper(用来操作bean中属性的工具)
+        if(BeanWrapper == null)
+            createBeanInstance
+    (2)记录下被@Autowired或者@Value标记上的方法和成员变量
+        applyMergedBeanDefinitionPostProcessor 通过责任链模式遍历并执行这些postProcessor
+    (3)是否允许提前暴露
+        判断是否为单例,是否允许循环引用,是否是在创建中的bean
+    (4)填充Bean属性
+        populateBean(beanName,mbd,instanceWrapper);
+    (5)initializeBean
+        initialization(beanName,exposedObject,mbd)
+    (6)注册相关销毁逻辑
+    (7)返回创建好的实例
+
+10、Spring是否支持所有循环依赖的情况
+   情况一：构造器循环依赖
+   情况二：Setter注入循环依赖
+   仅支持Setter注入的单例循环依赖 否则会报Requested bean is currently in creation
+            BeanCurrentlyInCreationException

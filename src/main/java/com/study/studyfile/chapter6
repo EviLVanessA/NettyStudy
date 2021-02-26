@@ -1,0 +1,55 @@
+Spring的核心接口和类
+一、Bean与BeanDefinition
+    ①Bean的本质就是java对象,只是这个对象的声明周期由容器来管理
+    ②不需要为了创建Bean而在原来的java类上添加任何额外的限制（体现了Spring的低侵入,甚至是无侵入）
+    ③对java对象的控制方式体现在配置上
+二、BeanDefinition--Bean的定义
+  1>根据配置，生成用来描述Bean的BeanDefinition,常用属性:
+    ①作用范围scope(@scope)：主要有五种singleton(每个对象只有一个实例)、prototype(多个实例,会有循环依赖的问题)、
+         request、session、globalsession
+    ②懒加载lazy-init(@Lazy)：决定Bean实例是否延迟加载 设置为true时,则在bean实例使用时才会进行创建
+    ③首选primary(@Primary)：设置为true的bean会是优先实现的类
+    ④factory-bean和factory-method(@Configuration和@Bean)：工厂bean和工厂方法  用于通过工厂创建bean实例
+
+                  读取            解析                   注册
+    配置文件(注解)------->Resource------->BeanDefinition------->Spring容器   （解析配置和定位与注册对象）
+
+  2>FactoryBean和BeanFactory有什么区别？
+    BeanFactory是Spring IoC容器的根接口,定义了bean工厂的最基本的功能特性,比如根据name获取到bean实例,BeanFactory是
+    用做管理类的容器,Spring中生成的Bean都是由这个接口的实现类来管理的。
+
+    FactoryBean同样也是接口,基于接口中的getObject()方法,用户可以使用一套复杂的逻辑来生成bean,FactoryBean的本质也是
+    一个Bean,但不是用来注入到其他地方,他的作用是用来生成普通的bean,实现了FactoryBean这个接口以后,Spring容器再初始化时
+    会把实现这个接口的Bean取出来,然后使用getObject()方法来生成我们想要的bean.
+
+  3>BeanFactory中的 FACTORY_BEAN_PREFIX 的作用
+    获取FactoryBean的实例 (getBean("&userFactoryBean"))
+
+  4>术语补充
+    ①组件扫描：自动发现应用容器中需要创建的Bean
+    ②自动装配：自动满足Bean之间的依赖
+      五种装配方式：AUTOWIRE_NO = 0 AUTOWIRE_BY_NAME = 1  AUTOWIRE_BY_TYPE = 2(Autowired默认)按类型进行装配
+      AUTOWIRE_CONSTRUCTOR = 3  第五种废弃(3.0) AUTOWIRE_AUTODETECT = 4
+  5>常用容器(高级容器)
+    传统的基于XML配置的经典容器
+      ①FileSystemXmlApplicationContext：从文件系统加载配置
+      ②ClassPathXmlApplicationContext：从classpath加载配置
+      ③XmlWebApplicationContext：用于Web应用程序的容器
+    注解方式的容器
+      ①AnnotationConfigServletWebServerApplicationContext：在springboot的boot模块下
+      ②AnnotationConfigReactiveWebServerApplicationContext：响应式容器需求,在springboot的boot模块下
+      ③AnnotationConfigApplicationContext:对于普通的非web应用基本上都用它
+  6>容器的共性 (最重要的一个类AbstractApplicationContext)
+    refresh()大致的功能：模板方法非常好的实现
+      ①完成容器的初始化、配置解析
+      ②BeanFactoryPostProcessor和BeanPostProcessor的注册和激活
+      ③国际化配置
+      ④web内置容器的构造 ....
+三、Resource (策略模式)
+  根据资源地址自动选择正确的Resource
+  ①自动识别"classpath:"、"file:"等资源地址前缀
+  ②支持自动解析Ant风格带通配符的资源地址
+    注：Ant 路径匹配表达式,用来对URI进行匹配  ?匹配任何单字符 *表示匹配0或者任意数量的字符 **匹配0或者更多的目录
+  ③ResourceLoader：实现不同的Resource加载策略,按需返回特定类型的Resource
+四、BeanDefinitionReader
+  1>作用：读取BeanDefinition 将BeanDefinition注册到BeanDefinitionRegistry

@@ -1,0 +1,20 @@
+1、AOP
+  1>切面Aspect：将横切关注点逻辑进行模块化封装的实体对象
+  2>通知Advice：好比是Class里面的方法，还定义了织入逻辑的时机
+  3>连接点JoinPoint：允许使用Advice的地方
+  4>SpringAOP默认只支持方法级别的JoinPoint
+  5>切入点Pointcut：定义一系列规则对JoinPoint进行筛选
+  6>目标对象Target：符合PointCut条件,要被织入横切逻辑的对象
+2、Advice的种类
+  1>BeforeAdvice：在JoinPoint前被执行的Advice
+  2>AfterAdvice：在JoinPoint后被执行的Advice 好比finally
+  3>AfterReturning：在JoinPoint执行流程正常返回后被执行
+  4>AfterThrowing：JoinPoint执行过程中抛出异常才会触发
+  5>AroundAdvice：在JointPoint前和后都执行
+3、动态代理
+  JDK动态代理：基于反射机制实现,要求业务类必须实现接口
+  CGLIB：基于ASM机制实现,生成业务类的子类作为代理类
+  JDK动态代理的优点：①JDK原生,在JVM里运行较为可靠 ②平滑支持JDK版本升级
+  CGLIB的优势：①被代理对象无需实现接口,能实现代理类的无侵入
+
+  Spring Aop：默认情况下,实现了接口则使用JDK动态代理,否则使用CGLIB
