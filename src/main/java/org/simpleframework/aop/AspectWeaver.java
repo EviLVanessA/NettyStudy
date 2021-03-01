@@ -87,6 +87,7 @@ public class AspectWeaver {
     private List<AspectInfo> packAspectInfoList(Set<Class<?>> aspectSet) {
         List<AspectInfo> aspectInfoList = new ArrayList<>();
         for (Class<?> aspectClass : aspectSet) {
+            //获取所有满足条件的类
             if (verifyAspect(aspectClass)) {
                 Order orderTag = aspectClass.getAnnotation(Order.class);
                 Aspect aspectTag = aspectClass.getAnnotation(Aspect.class);

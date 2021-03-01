@@ -1,6 +1,5 @@
 package org.simpleframework.aop;
 
-import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.tools.PointcutExpression;
 import org.aspectj.weaver.tools.PointcutParser;
 import org.aspectj.weaver.tools.ShadowMatch;
