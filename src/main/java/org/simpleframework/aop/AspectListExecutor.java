@@ -7,8 +7,8 @@ import org.simpleframework.aop.aspect.AspectInfo;
 import org.simpleframework.util.ValidationUtil;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -44,8 +44,9 @@ public class AspectListExecutor implements MethodInterceptor {
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         Object returnValue = null;
+        collectAccurateMatchedAspectList(method);
         if (ValidationUtil.isEmpty(sortedAspectInfoList)) {
-            return null;
+            return methodProxy.invokeSuper(proxy, args);
         }
         //1 按照order的执行顺序升序执行完所有Aspect的before方法
         invokeBeforeAdvices(method, args);
@@ -60,6 +61,24 @@ public class AspectListExecutor implements MethodInterceptor {
             e.printStackTrace();
         }
         return returnValue;
+    }
+
+    private void collectAccurateMatchedAspectList(Method method) {
+        if (ValidationUtil.isEmpty(sortedAspectInfoList)){
+            return;
+        }
+        //Lambda表达式
+        //sortedAspectInfoList.removeIf(next -> !next.getPointcutLocator().accurateMatches(method));
+
+        //获取列表对应的迭代器
+        Iterator<AspectInfo> it = sortedAspectInfoList.iterator();
+        while (it.hasNext()){
+            AspectInfo next = it.next();
+            //进行精准筛选
+            if (!next.getPointcutLocator().accurateMatches(method)){
+                it.remove();
+            }
+        }
     }
 
     /**
@@ -85,7 +104,8 @@ public class AspectListExecutor implements MethodInterceptor {
     private Object invokeAfterReturningAdvices(Method method, Object[] args, Object returnValue) throws Throwable {
         Object result = null;
         for (int i = sortedAspectInfoList.size() - 1; i >= 0; i--) {
-            result = sortedAspectInfoList.get(i).getAspectObject().afterReturning(targetClass, method, args, returnValue);
+            result = sortedAspectInfoList.get(i).getAspectObject().
+                    afterReturning(targetClass, method, args, returnValue);
         }
         return result;
     }

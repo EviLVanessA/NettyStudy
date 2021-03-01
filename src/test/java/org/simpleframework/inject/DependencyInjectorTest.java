@@ -1,7 +1,6 @@
 package org.simpleframework.inject;
 
-import com.study.controller.fronted.MainPageController;
-import com.study.service.combine.HeadLineShopCategoryCombineService;
+import com.study.controller.frontend.MainPageController;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

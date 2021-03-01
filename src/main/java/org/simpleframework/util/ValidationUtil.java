@@ -1,6 +1,7 @@
 package org.simpleframework.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author jianghui
@@ -35,5 +36,9 @@ public class ValidationUtil {
      */
     public static boolean isEmpty(String obj) {
         return obj == null || "".equalsIgnoreCase(obj);
+    }
+
+    public static boolean isEmpty(Map<?, ?> map) {
+        return map == null || map.isEmpty();
     }
 }

@@ -1,4 +1,4 @@
-package com.study.controller.fronted;
+package com.study.controller.frontend;
 
 import com.study.entity.dto.MainPageInfoDTO;
 import com.study.entity.dto.Result;

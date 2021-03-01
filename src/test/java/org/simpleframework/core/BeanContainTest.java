@@ -1,7 +1,7 @@
 package org.simpleframework.core;
 
 import com.study.HelloServlet;
-import com.study.controller.fronted.MainPageController;
+import com.study.controller.frontend.MainPageController;
 import com.study.service.solo.HeadLineService;
 import com.study.service.solo.impl.HeadLineServiceImpl;
 import org.junit.jupiter.api.*;

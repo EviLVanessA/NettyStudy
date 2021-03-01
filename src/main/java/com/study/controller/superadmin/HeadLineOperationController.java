@@ -34,7 +34,7 @@ import java.util.List;
  */
 @Controller
 public class HeadLineOperationController {
-    @Autowired
+    @Autowired(value = "HeadLineServiceImpl")
     private HeadLineService headLineService;
 
     /**

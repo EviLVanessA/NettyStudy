@@ -17,11 +17,11 @@ public class AspectListExecutorTest {
     @Test
     public void sortTest(){
         List<AspectInfo> list = new ArrayList<>();
-        list.add(new AspectInfo(3,new Mock1()));
-        list.add(new AspectInfo(5,new Mock2()));
-        list.add(new AspectInfo(2,new Mock3()));
-        list.add(new AspectInfo(4,new Mock4()));
-        list.add(new AspectInfo(1,new Mock5()));
+        list.add(new AspectInfo(3,new Mock1(),null));
+        list.add(new AspectInfo(5,new Mock2(),null));
+        list.add(new AspectInfo(2,new Mock3(),null));
+        list.add(new AspectInfo(4,new Mock4(),null));
+        list.add(new AspectInfo(1,new Mock5(),null));
 
         AspectListExecutor aspectListExecutor = new AspectListExecutor(AspectListExecutorTest.class,list);
         List<AspectInfo> list1 = aspectListExecutor.getSortedAspectInfoList();
