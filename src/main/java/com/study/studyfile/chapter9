@@ -1,6 +1,0 @@
-1、AspectJ框架
-  AspectJ框架的织入时机：静态织入和LTW(load time weaver)
-  ①编译时织入：利用ajc编译器,将切面逻辑织入到类里生成class文件 (静态织入)
-  ②编译后织入：利用ajc编译器,修改javac编译出来的class文件 (静态织入)
-  ③类加载器织入：利用java agent,在类加载的时候织入切面逻辑 (动态织入)
-               不是JDK动态代理 也不是CGLIB 而是修改字节码 最终还是只有一个类

@@ -1,0 +1,31 @@
+1、AspectJ框架
+  AspectJ框架的织入时机：静态织入和LTW(load time weaver)
+  ①编译时织入：利用ajc编译器,将切面逻辑织入到类里生成class文件 (静态织入)
+  ②编译后织入：利用ajc编译器,修改javac编译出来的class文件 (静态织入)
+  ③类加载器织入：利用java agent,在类加载的时候织入切面逻辑 (动态织入)
+               不是JDK动态代理 也不是CGLIB 而是修改字节码 最终还是只有一个类
+2、Spring的Aop的执行在AbstractAutoProxyCreator下的postProcessAfterInitialization方法中
+3、InstantiationAwareBeanPostProcessor的三个方法：
+  ①postProcessBeforeInstantiation：用来在对象实例化之前直接返回一个对象来代替通过内置的实例化流程创建对象
+                                   完成横切逻辑的解析和加载
+  ②postProcessAfterInstantiation：用来在对象实例化之后执行populateBean之前,如果返回false,则Spring不再对
+                                   对应的Bean实例进行自动的依赖注入
+  ③postProcessProperties：这里是在Spring处理完默认的成员属性,应用到指定的bean之前进行回调,可以用来检查和修改
+                           属性。@Autowired @Resource等就是根据这个回调来实现最终的依赖注入
+4、EnableAspectJAutoProxy注解的属性值：
+  ①boolean proxyTargetClass() default false;  表明采用CGLIB还是JDK的动态代理 true:CGLIB false:尽可能使用JDK的动态代理
+  ②boolean exposeProxy() default false; 解决内部调用不能使用代理的场景 默认为false表示不处理
+5、SpringAOP的总体流程
+  ①注册解析AOP服务
+  ②解析和加载横切逻辑(Aspect和Advice的加载阶段)
+    createBean->postProcessBeforeInstantiation->shouldSkip
+    在shouldSkip中 调用findCandidateAdvisors方法用来合并注解和非注解的advisors
+    针对注解的Aspect来讲,对应的Advisors是通过buildAspectJAdvisors解析出来的
+    buildAspectJAdvisors主要实现：
+        ①从容器获取所有的beanName
+        ②遍历beanName,解析出被@Aspect标记的类
+        ③提取Aspect类的Advisors
+        ④将提取结果加入缓存 Aspect的名字为key,对应的advisors为value存入缓存以供使用
+  ③将横切的逻辑织入目标Bean中
+     SpringAop通过bean级别的后置处理器在bean的生命周期对bean进行处理
+     在postProcessAfterInstantiation方法进行横切逻辑的织入

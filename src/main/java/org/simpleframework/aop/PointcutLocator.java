@@ -36,7 +36,7 @@ public class PointcutLocator {
      * @return
      */
     public boolean roughMatches(Class<?> targetClass){
-        //couldMatchJoinPointsInType只能校验WithIn 不能校验execution call get set
+        //couldMatchJoinPointsInType只能校验WithIn 不能校验execution(精确到类上的除外) call get set
         //面对无法校验的表达式 直接返回true
         return pointcutExpression.couldMatchJoinPointsInType(targetClass);
     }
