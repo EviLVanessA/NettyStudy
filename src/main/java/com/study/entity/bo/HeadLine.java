@@ -35,7 +35,7 @@ public class HeadLine {
     /**
      * 头条的显示优先级
      */
-    private String priority;
+    private Integer priority;
     /**
      * 头条的可用性 1可用0不可用
      */
